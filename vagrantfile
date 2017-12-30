@@ -1,30 +1,53 @@
+## Configuration
+NUM_OF_MANAGERS=1
+NUM_OF_LINUX_WORKERS=1
+NUM_OF_WINDOWS_WORKERS=1
+
+VIRTUAL_PROVIDER="hyperv"
+VIRTUAL_LINUX_BOX="generic/debian9"
+VIRTUAL_WINDOWS_BOX="gusztavvargadr/w16sc"
+
 Vagrant.configure("2") do |config|
 
-  config.vm.define "linManager" do |linManager|
-    linManager.vm.box = "generic/debian9"
-    linManager.vm.hostname = "linManager"
+  (1..NUM_OF_MANAGERS).each do |mgrNumber|
+    _MACHINE_NAME = "limManager-#{mgrNumber}"
+    config.vm.define _MACHINE_NAME do |linManager|
+      linManager.vm.box = VIRTUAL_LINUX_BOX
+      linManager.vm.hostname = _MACHINE_NAME
 
-    linManager.vm.provider :hyperv do |h|
-      h.cpus = 1
-      h.memory = 512
+      linManager.vm.provider VIRTUAL_PROVIDER do |h|
+        h.cpus = 1
+        h.memory = 512
+        #h.name = _MACHINE_NAME
+      end
     end
   end
-  config.vm.define "linWorker" do |linWorker|
-    linWorker.vm.box = "generic/debian9"
-    linWorker.vm.hostname = "linWorker"
 
-    linWorker.vm.provider :hyperv do |h|
-      h.cpus = 1
-      h.memory = 512
+  (1..NUM_OF_LINUX_WORKERS).each do |linWrkNumber|
+    _MACHINE_NAME = "linWorker-#{linWrkNumber}"
+    config.vm.define _MACHINE_NAME do |linWorker|
+      linWorker.vm.box = VIRTUAL_LINUX_BOX
+      linWorker.vm.hostname = _MACHINE_NAME
+
+      linWorker.vm.provider VIRTUAL_PROVIDER do |h|
+        h.cpus = 1
+        h.memory = 512
+        #h.name = _MACHINE_NAME
+      end
     end
   end
-  config.vm.define "winWorker" do |winWorker|
-    winWorker.vm.box = "gusztavvargadr/w16sc"
-    winWorker.vm.hostname = "winWorker"
 
-    winWorker.vm.provider :hyperv do |h|
-      h.cpus = 1
-      h.memory = 512
+  (1..NUM_OF_WINDOWS_WORKERS).each do |winWrkNumber|
+    _MACHINE_NAME = "winWorker-#{winWrkNumber}"
+    config.vm.define _MACHINE_NAME do |winWorker|
+      winWorker.vm.box = VIRTUAL_WINDOWS_BOX
+      winWorker.vm.hostname = _MACHINE_NAME
+
+      winWorker.vm.provider VIRTUAL_PROVIDER do |h|
+        h.cpus = 1
+        h.memory = 512
+        #h.name = _MACHINE_NAME
+      end
     end
   end
 end
