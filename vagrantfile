@@ -1,0 +1,30 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.define "linManager" do |linManager|
+    linManager.vm.box = "generic/debian9"
+    linManager.vm.hostname = "linManager"
+
+    linManager.vm.provider :hyperv do |h|
+      h.cpus = 1
+      h.memory = 512
+    end
+  end
+  config.vm.define "linWorker" do |linWorker|
+    linWorker.vm.box = "generic/debian9"
+    linWorker.vm.hostname = "linWorker"
+
+    linWorker.vm.provider :hyperv do |h|
+      h.cpus = 1
+      h.memory = 512
+    end
+  end
+  config.vm.define "winWorker" do |winWorker|
+    winWorker.vm.box = "gusztavvargadr/w16sc"
+    winWorker.vm.hostname = "winWorker"
+
+    winWorker.vm.provider :hyperv do |h|
+      h.cpus = 1
+      h.memory = 512
+    end
+  end
+end
