@@ -9,8 +9,10 @@ VIRTUAL_WINDOWS_BOX="gusztavvargadr/w16sc"
 
 Vagrant.configure("2") do |config|
 
+  
+
   (1..NUM_OF_MANAGERS).each do |mgrNumber|
-    _MACHINE_NAME = "limManager-#{mgrNumber}"
+    _MACHINE_NAME = "linManager-#{mgrNumber}"
     config.vm.define _MACHINE_NAME do |linManager|
       linManager.vm.box = VIRTUAL_LINUX_BOX
       linManager.vm.hostname = _MACHINE_NAME
@@ -18,7 +20,14 @@ Vagrant.configure("2") do |config|
       linManager.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        #h.name = _MACHINE_NAME
+        if (VIRTUAL_PROVIDER == "hyperv") 
+          h.enable_virtualization_extensions = true
+          h.differencing_disk = true
+          h.vmname = _MACHINE_NAME 
+        end       
+        if (VIRTUAL_PROVIDER == "virtualbox") 
+          h.name = _MACHINE_NAME 
+        end
       end
     end
   end
@@ -32,7 +41,14 @@ Vagrant.configure("2") do |config|
       linWorker.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        #h.name = _MACHINE_NAME
+        if (VIRTUAL_PROVIDER == "hyperv") 
+          h.enable_virtualization_extensions = true
+          h.differencing_disk = true
+          h.vmname = _MACHINE_NAME 
+        end       
+        if (VIRTUAL_PROVIDER == "virtualbox") 
+          h.name = _MACHINE_NAME 
+        end
       end
     end
   end
@@ -42,11 +58,19 @@ Vagrant.configure("2") do |config|
     config.vm.define _MACHINE_NAME do |winWorker|
       winWorker.vm.box = VIRTUAL_WINDOWS_BOX
       winWorker.vm.hostname = _MACHINE_NAME
+      #winWorker.vm.network "public_network"
 
       winWorker.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        #h.name = _MACHINE_NAME
+        if (VIRTUAL_PROVIDER == "hyperv") 
+          h.enable_virtualization_extensions = true
+          h.differencing_disk = true
+          h.vmname = _MACHINE_NAME 
+        end       
+        if (VIRTUAL_PROVIDER == "virtualbox") 
+          h.name = _MACHINE_NAME 
+        end 
       end
     end
   end

@@ -10,8 +10,8 @@ The following tasks will be performed in this solution
 
 ## Prerequisite
 
-  * [Vagrant(https://www.vagrantup.com/)]
+  * [Vagrant](https://www.vagrantup.com/)
   * a virtualization provider, either :
-    - [VirtualBox(https://www.virtualbox.org/)]
-    - [HyperV(https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/)]
+    - [VirtualBox](https://www.virtualbox.org/)
+    - [HyperV](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/)
     
