@@ -1,7 +1,7 @@
 ## Configuration
 NUM_OF_MANAGERS=1
 NUM_OF_LINUX_WORKERS=1
-NUM_OF_WINDOWS_WORKERS=0
+NUM_OF_WINDOWS_WORKERS=1
 
 VIRTUAL_PROVIDER="virtualbox"
 VIRTUAL_LINUX_BOX="generic/debian9"
@@ -21,6 +21,12 @@ Vagrant.configure("2") do |config|
       # shell provisioning (install puppet)
       linManager.vm.provision "shell" do |shell|
         shell.path = "./shell/debian-puppet.sh"
+      end
+
+      # puppet provisioning (install and set up docker)
+      linManager.vm.provision "puppet" do |puppet|
+        puppet.manifests_path = "puppet/manifests"
+        puppet.manifest_file = "default-debian.pp"
       end
 
       # provider specifics
@@ -47,8 +53,14 @@ Vagrant.configure("2") do |config|
       linWorker.vm.hostname = _MACHINE_NAME
 
       # shell provisioning (install puppet)
-      linManager.vm.provision "shell" do |shell|
+      linWorker.vm.provision "shell" do |shell|
         shell.path = "./shell/debian-puppet.sh"
+      end
+
+      # puppet provisioning (install and set up docker)
+      linWorker.vm.provision "puppet" do |puppet|
+        puppet.manifests_path = "puppet/manifests"
+        puppet.manifest_file = "default-debian.pp"
       end
 
       # provider specifics
@@ -73,7 +85,21 @@ Vagrant.configure("2") do |config|
       # VM general
       winWorker.vm.box = VIRTUAL_WINDOWS_BOX
       winWorker.vm.hostname = _MACHINE_NAME
+      winWorker.vm.hostname = _MACHINE_NAME
+      winWorker.vm.guest = "windows"
+      winWorker.vm.communicator = "winrm"
       #winWorker.vm.network "public_network"
+
+      # shell provisioning (install puppet)
+      winWorker.vm.provision "shell" do |powershell|
+        powershell.path = "./shell/windows-puppet.ps1"
+      end
+
+      # puppet provisioning (install and set up docker)
+      winWorker.vm.provision "puppet" do |puppet|
+        puppet.manifests_path = "puppet/manifests"
+        puppet.manifest_file = "default-windows.pp"
+      end
 
       # provider specifics
       winWorker.vm.provider VIRTUAL_PROVIDER do |h|
@@ -81,7 +107,7 @@ Vagrant.configure("2") do |config|
         h.memory = 512
         if (VIRTUAL_PROVIDER == "hyperv")
           h.enable_virtualization_extensions = true
-          h.differencing_disk = true
+          h.differencing_disk = "true"
           h.vmname = _MACHINE_NAME
         end
         if (VIRTUAL_PROVIDER == "virtualbox")
