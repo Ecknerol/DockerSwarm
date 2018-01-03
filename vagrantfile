@@ -1,32 +1,39 @@
 ## Configuration
 NUM_OF_MANAGERS=1
 NUM_OF_LINUX_WORKERS=1
-NUM_OF_WINDOWS_WORKERS=1
+NUM_OF_WINDOWS_WORKERS=0
 
-VIRTUAL_PROVIDER="hyperv"
+VIRTUAL_PROVIDER="virtualbox"
 VIRTUAL_LINUX_BOX="generic/debian9"
 VIRTUAL_WINDOWS_BOX="gusztavvargadr/w16sc"
 
 Vagrant.configure("2") do |config|
 
-  
+  config.vm.boot_timeout = 300
 
   (1..NUM_OF_MANAGERS).each do |mgrNumber|
     _MACHINE_NAME = "linManager-#{mgrNumber}"
     config.vm.define _MACHINE_NAME do |linManager|
+      # VM general
       linManager.vm.box = VIRTUAL_LINUX_BOX
       linManager.vm.hostname = _MACHINE_NAME
 
+      # shell provisioning (install puppet)
+      linManager.vm.provision "shell" do |shell|
+        shell.path = "./shell/debian-puppet.sh"
+      end
+
+      # provider specifics
       linManager.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        if (VIRTUAL_PROVIDER == "hyperv") 
+        if (VIRTUAL_PROVIDER == "hyperv")
           h.enable_virtualization_extensions = true
           h.differencing_disk = true
-          h.vmname = _MACHINE_NAME 
-        end       
-        if (VIRTUAL_PROVIDER == "virtualbox") 
-          h.name = _MACHINE_NAME 
+          h.vmname = _MACHINE_NAME
+        end
+        if (VIRTUAL_PROVIDER == "virtualbox")
+          h.name = _MACHINE_NAME
         end
       end
     end
@@ -35,19 +42,26 @@ Vagrant.configure("2") do |config|
   (1..NUM_OF_LINUX_WORKERS).each do |linWrkNumber|
     _MACHINE_NAME = "linWorker-#{linWrkNumber}"
     config.vm.define _MACHINE_NAME do |linWorker|
+      # VM general
       linWorker.vm.box = VIRTUAL_LINUX_BOX
       linWorker.vm.hostname = _MACHINE_NAME
 
+      # shell provisioning (install puppet)
+      linManager.vm.provision "shell" do |shell|
+        shell.path = "./shell/debian-puppet.sh"
+      end
+
+      # provider specifics
       linWorker.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        if (VIRTUAL_PROVIDER == "hyperv") 
+        if (VIRTUAL_PROVIDER == "hyperv")
           h.enable_virtualization_extensions = true
           h.differencing_disk = true
-          h.vmname = _MACHINE_NAME 
-        end       
-        if (VIRTUAL_PROVIDER == "virtualbox") 
-          h.name = _MACHINE_NAME 
+          h.vmname = _MACHINE_NAME
+        end
+        if (VIRTUAL_PROVIDER == "virtualbox")
+          h.name = _MACHINE_NAME
         end
       end
     end
@@ -56,21 +70,23 @@ Vagrant.configure("2") do |config|
   (1..NUM_OF_WINDOWS_WORKERS).each do |winWrkNumber|
     _MACHINE_NAME = "winWorker-#{winWrkNumber}"
     config.vm.define _MACHINE_NAME do |winWorker|
+      # VM general
       winWorker.vm.box = VIRTUAL_WINDOWS_BOX
       winWorker.vm.hostname = _MACHINE_NAME
       #winWorker.vm.network "public_network"
 
+      # provider specifics
       winWorker.vm.provider VIRTUAL_PROVIDER do |h|
         h.cpus = 1
         h.memory = 512
-        if (VIRTUAL_PROVIDER == "hyperv") 
+        if (VIRTUAL_PROVIDER == "hyperv")
           h.enable_virtualization_extensions = true
           h.differencing_disk = true
-          h.vmname = _MACHINE_NAME 
-        end       
-        if (VIRTUAL_PROVIDER == "virtualbox") 
-          h.name = _MACHINE_NAME 
-        end 
+          h.vmname = _MACHINE_NAME
+        end
+        if (VIRTUAL_PROVIDER == "virtualbox")
+          h.name = _MACHINE_NAME
+        end
       end
     end
   end
